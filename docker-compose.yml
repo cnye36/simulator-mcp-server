@@ -1,0 +1,29 @@
+services:
+  simulation-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simulation-mcp-server
+    volumes:
+      # Mount storage directory to persist artifacts
+      - ./storage:/app/storage
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MCP_TRANSPORT=streamable-http
+      - STORAGE_PATH=/app/storage
+      - PORT=8000
+      - FASTMCP_HOST=0.0.0.0  # Bind to all interfaces for external access
+    ports:
+      - "8000:8000"
+    # stdin/tty only needed for stdio mode
+    # stdin_open: true
+    # tty: true
+    # Restart policy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+

@@ -1,0 +1,42 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["domain","model_type","parameters","initial_conditions","time_span"],
+    "properties": {
+      "domain": { "enum": ["epidemiology","physics","finance","custom"] },
+      "model_type": { "enum": ["SIR","LotkaVolterra","Logistic","Projectile","MonteCarlo"] },
+      "parameters": { "type": "object", "additionalProperties": { "type": "number" } },
+      "initial_conditions": { "type": "object", "additionalProperties": { "type": "number" } },
+      "time_span": {
+        "type": "object",
+        "required": ["start","end"],
+        "properties": {
+          "start": { "type": "number" },
+          "end":   { "type": "number" },
+          "steps": { "type": "integer", "minimum": 2 },
+          "preview_mode": { 
+            "type": "boolean", 
+            "default": false,
+            "description": "When true, limit steps to 100 for faster preview rendering"
+          }
+        }
+      },
+      "method": { "enum": ["RK45","RK23","DOP853"] },
+      "sensitivity": {
+        "type": "object",
+        "additionalProperties": { "type": "number" }
+      },
+      "tags": { "type": "array", "items": { "type": "string" } },
+      "return_data": { 
+        "type": "boolean", 
+        "default": true,
+        "description": "Return actual data points in response (recommended for interactive UIs)"
+      },
+      "save_artifacts": { 
+        "type": "boolean", 
+        "default": true,
+        "description": "Save CSV and plot files to disk (can disable for faster response)"
+      }
+    }
+  }
+  

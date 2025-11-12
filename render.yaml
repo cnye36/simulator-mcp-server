@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: simulation-mcp-server
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: MCP_TRANSPORT
+        value: streamable-http
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: STORAGE_PATH
+        value: /data/storage
+      - key: PORT
+        value: "8000"
+      - key: FASTMCP_HOST
+        value: "0.0.0.0"
+    healthCheckPath: /health
+    disk:
+      name: simulation-storage
+      mountPath: /data
+      sizeGB: 10
