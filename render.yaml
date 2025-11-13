@@ -9,13 +9,11 @@ services:
       - key: PYTHONUNBUFFERED
         value: "1"
       - key: STORAGE_PATH
-        value: /data/storage
+        value: /tmp/storage
       - key: PORT
         value: "8000"
       - key: FASTMCP_HOST
         value: "0.0.0.0"
     healthCheckPath: /health
-    disk:
-      name: simulation-storage
-      mountPath: /data
-      sizeGB: 10
+    # No persistent disk needed - server is stateless
+    # Chat apps should handle persistence via their own storage (e.g., Supabase)

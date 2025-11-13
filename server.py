@@ -68,8 +68,8 @@ class SimulateModelInput(BaseModel):
         description="Return actual data points in response (recommended for interactive UIs)"
     )
     save_artifacts: bool = Field(
-        default=True,
-        description="Save CSV and plot files to disk (can disable for faster response)"
+        default=False,
+        description="Save CSV and plot files to disk. Default False for stateless operation. Chat apps should handle persistence via their own storage (e.g., Supabase)."
     )
 
 class Artifact(BaseModel):
@@ -138,7 +138,8 @@ def write_plot(t: np.ndarray, Y: np.ndarray, headers: List[str], run_id: str) ->
 mcp = FastMCP(
     "Simulation MCP",
     host=os.getenv("FASTMCP_HOST", "0.0.0.0"),  # Explicitly bind to 0.0.0.0 for production
-    port=int(os.getenv("PORT", "8000"))
+    port=int(os.getenv("PORT", "8000")),
+    stateless_http=True  # Enable stateless mode - no session management needed
 )
 
 @mcp.custom_route("/health", methods=["GET"])
@@ -290,9 +291,11 @@ if __name__ == "__main__":
     logger.info("🚀 Starting Simulation MCP Server")
     logger.info("   Version: 0.1.0")
     logger.info(f"   Transport: {transport}")
-    logger.info(f"   Storage: {OUT_DIR}")
+    logger.info(f"   Storage: {OUT_DIR} (temporary, stateless operation)")
     logger.info(f"   Registered solvers: {list(SOLVERS.keys())}")
     logger.info(f"   Log level: {os.getenv('LOG_LEVEL', 'INFO')}")
+    logger.info("   ⚠️  Stateless mode: No authentication required")
+    logger.info("   ⚠️  Chat apps should handle persistence via their own storage")
     logger.info("="*80)
     
     if transport == "streamable-http" or transport == "http":
