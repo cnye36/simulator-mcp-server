@@ -155,7 +155,7 @@ async def health_check(request):
     })
 
 @mcp.tool()
-def simulate_model(spec: SimulateModelInput, ctx: Context) -> CallToolResult:
+def simulate_model(spec: SimulateModelInput, ctx: Context | None = None) -> CallToolResult:
     """
     Run a simulation described by a structured JSON spec and return artifacts + metrics.
     
@@ -186,13 +186,19 @@ def simulate_model(spec: SimulateModelInput, ctx: Context) -> CallToolResult:
             logger.debug("✅ JSON schema validation passed")
         except JSONSchemaError as e:
             logger.error(f"❌ JSON schema validation failed: {e.message}")
-            return CallToolResult(error=f"JSON schema validation failed: {e.message}")
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"JSON schema validation failed: {e.message}")],
+                isError=True
+            )
 
     key = (spec.domain, spec.model_type)
     if key not in SOLVERS:
         logger.error(f"❌ No solver registered for domain={spec.domain}, model_type={spec.model_type}")
         logger.info(f"   Available solvers: {list(SOLVERS.keys())}")
-        return CallToolResult(error=f"No solver registered for domain={spec.domain}, model_type={spec.model_type}")
+        return CallToolResult(
+            content=[TextContent(type="text", text=f"No solver registered for domain={spec.domain}, model_type={spec.model_type}")],
+            isError=True
+        )
 
     # Apply preview mode: limit steps for faster rendering
     actual_steps = spec.time_span.steps
@@ -220,7 +226,10 @@ def simulate_model(spec: SimulateModelInput, ctx: Context) -> CallToolResult:
     except Exception as e:
         logger.error(f"❌ Solver error: {type(e).__name__}: {str(e)}")
         logger.exception("Full traceback:")
-        return CallToolResult(error=f"Solver error: {e}")
+        return CallToolResult(
+            content=[TextContent(type="text", text=f"Solver error: {type(e).__name__}: {str(e)}")],
+            isError=True
+        )
 
     headers = list(spec.initial_conditions.keys())
     
@@ -304,7 +313,7 @@ if __name__ == "__main__":
         port = os.getenv("PORT", "8000")
         logger.info("🌐 Running in HTTP mode (streamable-http)")
         logger.info(f"   Binding to: {host}:{port}")
-        logger.info(f"   Set FASTMCP_HOST=0.0.0.0 for external access")
+        logger.info("   Set FASTMCP_HOST=0.0.0.0 for external access")
         mcp.run(transport="streamable-http")
     elif transport == "sse":
         # Deprecated SSE mode (kept for backwards compatibility)
