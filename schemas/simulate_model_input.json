@@ -23,10 +23,17 @@
       },
       "method": { "enum": ["RK45","RK23","DOP853"] },
       "sensitivity": {
-        "type": "object",
-        "additionalProperties": { "type": "number" }
+        "anyOf": [
+          { "type": "object", "additionalProperties": { "type": "number" } },
+          { "type": "null" }
+        ]
       },
-      "tags": { "type": "array", "items": { "type": "string" } },
+      "tags": { 
+        "anyOf": [
+          { "type": "array", "items": { "type": "string" } },
+          { "type": "null" }
+        ]
+      },
       "return_data": { 
         "type": "boolean", 
         "default": true,
@@ -34,8 +41,8 @@
       },
       "save_artifacts": { 
         "type": "boolean", 
-        "default": true,
-        "description": "Save CSV and plot files to disk (can disable for faster response)"
+        "default": false,
+        "description": "Save CSV and plot files to disk. Default False for stateless operation. Chat apps should handle persistence via their own storage (e.g., Supabase)."
       }
     }
   }
