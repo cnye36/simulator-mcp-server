@@ -135,7 +135,11 @@ def write_plot(t: np.ndarray, Y: np.ndarray, headers: List[str], run_id: str) ->
 
 # --- Build server ---
 
-mcp = FastMCP("Simulation MCP")
+mcp = FastMCP(
+    "Simulation MCP",
+    host=os.getenv("FASTMCP_HOST", "0.0.0.0"),  # Explicitly bind to 0.0.0.0 for production
+    port=int(os.getenv("PORT", "8000"))
+)
 
 @mcp.custom_route("/health", methods=["GET"])
 async def health_check(request):
