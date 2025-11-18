@@ -97,13 +97,16 @@ else:
     INPUT_SCHEMA = None  # optional; Pydantic already validates
 
 # --- Solver registry ---
-from models.sir import simulate_sir  # add more as you implement
+from models.sir import simulate_sir
+from models.lotka_volterra import simulate_lotka_volterra
+from models.logistic import simulate_logistic
 
 SolverResult = Tuple[np.ndarray, np.ndarray, Dict[str, float]]  # t, Y, metrics
 
 SOLVERS = {
     ("epidemiology","SIR"): simulate_sir,
-    # ("epidemiology","LotkaVolterra"): simulate_lv,
+    ("epidemiology","LotkaVolterra"): simulate_lotka_volterra,
+    ("epidemiology","Logistic"): simulate_logistic,
     # ("physics","Projectile"): simulate_projectile,
     # etc...
 }
