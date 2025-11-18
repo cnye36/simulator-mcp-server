@@ -100,6 +100,8 @@ else:
 from models.sir import simulate_sir
 from models.lotka_volterra import simulate_lotka_volterra
 from models.logistic import simulate_logistic
+from models.projectile import simulate_projectile
+from models.monte_carlo import simulate_monte_carlo
 
 SolverResult = Tuple[np.ndarray, np.ndarray, Dict[str, float]]  # t, Y, metrics
 
@@ -107,8 +109,8 @@ SOLVERS = {
     ("epidemiology","SIR"): simulate_sir,
     ("epidemiology","LotkaVolterra"): simulate_lotka_volterra,
     ("epidemiology","Logistic"): simulate_logistic,
-    # ("physics","Projectile"): simulate_projectile,
-    # etc...
+    ("physics","Projectile"): simulate_projectile,
+    ("finance","MonteCarlo"): simulate_monte_carlo,
 }
 
 # --- Utility: write CSV & plot ---
